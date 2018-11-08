@@ -69,39 +69,10 @@ function pasteHtmlAtCaret(html, selectPastedContent) {
   }
 }
 
-class Editor {
-  static exec() {
-    document.execCommand(...arguments);
-    console.log(...arguments);
-  }
-  static bold() {
-    Editor.exec("bold", false);
-  }
-  static italic() {
-    Editor.exec("italic", false);
-  }
-  static underline() {
-    Editor.exec("underline", false);
-  }
-  static heading() {
-    Editor.exec("heading", false, "h1");
-  }
-  static alignLeft() {
-    Editor.exec("justifyLeft", false);
-  }
-  static alignCenter() {
-    Editor.exec("justifyCenter", false);
-  }
-  static alignRight() {
-    Editor.exec("justifyRight", false);
-  }
-  static fontSize() {
-    Editor.fontSizeCalls =
-      Editor.fontSizeCalls || Editor.fontSizeCalls === 1
-        ? (Editor.fontSizeCalls + 1) % 8
-        : 1;
-    Editor.exec("fontSize", false, Editor.fontSizeCalls);
-  }
+
+function exec(){
+    let args = arguments;
+    return (args)=>{document.execCommand(...arguments);}
 }
 
 export default {
@@ -113,7 +84,6 @@ export default {
   data() {
     return {
       content: this.value,
-      showMenu: false,
       magicwords: [
         {
           id: 0,
@@ -146,49 +116,53 @@ export default {
           keywords: ["format", "bold"],
           name: "bold",
           icon: "format_bold",
-          action: Editor.bold
+          action: exec("bold", false)
         },
         {
           keywords: ["format", "italic"],
           name: "italic",
           icon: "format_italic",
-          action: Editor.italic
+          action: exec("italic", false)
         },
         {
           keywords: ["format", "underline"],
           name: "underline",
           icon: "format_underline",
-          action: Editor.underline
+          action: exec("underline", false)
         },
         {
-          keywords: ["font-size"],
-          name: "change_fontSize",
+          keywords: ["heading"],
+          name: "format_h1",
           icon: "format_size",
-          action: Editor.fontSize
+          action: exec("formatBlock", false, "<h1>")
         },
         {
           keywords: ["alignment", "left"],
           name: "align_left",
           icon: "format_align_left",
-          action: Editor.alignLeft
+          action: exec("justifyLeft", false)
         },
         {
           keywords: ["alignment", "center"],
           name: "align_center",
           icon: "format_align_center",
-          action: Editor.alignCenter
+          action: exec("justifyCenter", false)
         },
         {
           keywords: ["alignment", "right"],
           name: "align_right",
           icon: "format_align_right",
-          action: Editor.alignRight
+          action: exec("justifyRight", false)
         },
         {
           keywords: ["magic", "words"],
-          name: "magic_words",
-          icon: "add_comment",
-          action: this.show
+          name: "magic",
+          icon: "add",
+          /* 
+            Noticed a bug here:
+            If you change `icon` to add_comment, vuetify renders both add AND add_comment icons
+          */
+          action: ()=>{}
         }
       ]
     };
@@ -204,15 +178,6 @@ export default {
 
       this.$refs.editor.dispatchEvent(event);
     },
-    show(e) {
-      e.preventDefault();
-      this.showMenu = false;
-      this.x = e.clientX;
-      this.y = e.clientY;
-      this.$nextTick(() => {
-        this.showMenu = true;
-      });
-    },
     handleContentBinds(event) {
       this.$emit("input", this.$refs.editor.innerHTML);
     }
@@ -223,13 +188,15 @@ export default {
 <style scoped>
 .v-editor {
   border-bottom: 1px solid black;
-  padding: 1vh 2vw;
+  padding: 15px 10px;
   min-width: 20vw;
   transition: border-bottom 0.2s;
-  line-height: 5vh;
 }
 .v-editor:focus {
-  border-bottom: 3px solid blue;
+  border-bottom: 3px solid #5c6bc0;
   outline: none;
 }
+/* 
+https://material.io/tools/color/#!/?view.left=0&view.right=0&primary.color=7986CB&secondary.color=5C6BC0
+ */
 </style>
