@@ -55,24 +55,15 @@
   </div>
 </template>
 
-<script>
-import BluePost from "@/components/Post";
-import BlueEditor from "@/components/BlueEditor";
-import BlueSettings from "@/components/Settings";
+<script lang="ts">
+import BluePost from "@/components/Post.vue";
+import BlueEditor from "@/components/BlueEditor.vue";
+import BlueSettings from "@/components/Settings.vue";
+import { mapState } from "vuex";
+import jraph from "jraph";
+console.log(jraph);
+console.log("========================================================================");
 
-async function jraph(argv) {
-  let url = argv.url;
-  let headers = { "Content-Type": "application/json" };
-  let body = JSON.stringify({ query: argv.query });
-  let fetch_options = {
-    method: argv.method,
-    headers,
-    body
-  };
-  //returns request as JSON
-  return (await fetch(url, fetch_options).then(res => res.json())).data;
-  //return fetch(url, fetch_options).then(res => res.json());
-}
 
 export default {
   name: "Feed",
@@ -82,10 +73,6 @@ export default {
       activePostContent: "",
       settingsPanel: null,
       sheet: null,
-      user: {
-        handle: "ianfabs",
-        name: "Ian Fabs"
-      },
       posts: [
       {
         authorHandle: "ianfabs",
@@ -108,6 +95,9 @@ export default {
       this.settingsPanel = value;
     }
   },
+  computed: {
+    ...mapState(['user'])
+  },
   components: {
     BluePost,
     BlueEditor,
@@ -116,9 +106,9 @@ export default {
   async created() {
     let posts = await jraph({
       url: "https://csb-8kj415zvx9-ysgmolcfdk.now.sh/",
-      method: "POST",
+      options: {},
       query: `{
-        posts(handle: "${this.user.handle}"){
+        posts(handle: "${this.user.email}"){
           content
           authorHandle
           postedOn
@@ -127,6 +117,11 @@ export default {
     });
     console.log(posts);
     this.posts = posts.posts;
+  },
+  mounted(){
+    if(!this.user.email){
+      this.$router.push("/login")
+    }
   }
 };
 </script>
