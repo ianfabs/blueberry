@@ -23,11 +23,5 @@ export default {
 </script>
 
 <style>
-.m-word{
-  border: 3px solid #C5CAE9;
-  background-color: bisque;
-  border-radius: 5px;
-  padding: 1vmax;
-  white-space: nowrap;
-}
+
 </style>
