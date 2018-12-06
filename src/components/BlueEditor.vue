@@ -24,7 +24,6 @@
         ref="editor"
         @input="handleContentBinds"
       >
-      <MagicMood></MagicMood>
       </div>
     </div>
   </div>
@@ -32,55 +31,7 @@
 
 <script>
 import MagicMood from "@/components/Magic/Mood";
-function pasteHtmlAtCaret(html, selectPastedContent) {
-  var sel, range;
-  if (window.getSelection) {
-    // IE9 and non-IE
-    sel = window.getSelection();
-    if (sel.getRangeAt && sel.rangeCount) {
-      range = sel.getRangeAt(0);
-      range.deleteContents();
-
-      // Range.createContextualFragment() would be useful here but is
-      // only relatively recently standardized and is not supported in
-      // some browsers (IE9, for one)
-      var el = document.createElement("div");
-      el.innerHTML = html;
-      var frag = document.createDocumentFragment(),
-        node,
-        lastNode;
-      while ((node = el.firstChild)) {
-        lastNode = frag.appendChild(node);
-      }
-      var firstNode = frag.firstChild;
-      range.insertNode(frag);
-
-      // Preserve the selection
-      if (lastNode) {
-        range = range.cloneRange();
-        range.setStartAfter(lastNode);
-        if (selectPastedContent) {
-          range.setStartBefore(firstNode);
-        } else {
-          range.collapse(true);
-        }
-        sel.removeAllRanges();
-        sel.addRange(range);
-      }
-    }
-  } else if ((sel = document.selection) && sel.type != "Control") {
-    // IE < 9
-    var originalRange = sel.createRange();
-    originalRange.collapse(true);
-    sel.createRange().pasteHTML(html);
-    if (selectPastedContent) {
-      range = sel.createRange();
-      range.setEndPoint("StartToStart", originalRange);
-      range.select();
-    }
-  }
-}
-
+const paret = require('paret');
 
 function exec(){
     let args = arguments;
@@ -135,10 +86,7 @@ export default {
         {
           id: 4,
           word: "mood",
-          action: async () => {
-            
-            return ``;
-          }
+          action: ()=>``
         }
       ],
       allMenuOptions: [
@@ -182,25 +130,21 @@ export default {
           keywords: ["alignment", "right"],
           name: "align_right",
           icon: "format_align_right",
-          action: exec("justifyRight", false)
-        },
-        {
-          keywords: ["magic", "words"],
-          name: "magic",
-          icon: "add",
           /* 
             Noticed a bug here:
             If you change `icon` to add_comment, vuetify renders both add AND add_comment icons
           */
-          action: ()=>{}
-        }
+          action: exec("justifyRight", false)
+        },
       ]
     };
   },
   methods: {
     async insertMagicWord(action) {
-      let word = `<span class='m-word' contenteditable='false'>${await action()}</span>\n`;
-      pasteHtmlAtCaret(word, false);
+      let actionVal = await action();
+      console.log(actionVal);
+      let word = `<span class='m-word' contenteditable='false'>${actionVal}</span>\n`;
+      paret(word, false);
       var event = new Event("input", {
         bubbles: true,
         cancelable: true

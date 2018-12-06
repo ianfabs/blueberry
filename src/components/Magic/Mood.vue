@@ -12,7 +12,7 @@
 
 <script>
 export default {
-    name: "Mood",
+    name: "MagicMood",
     data(){
         return {
             currentMood: {},
