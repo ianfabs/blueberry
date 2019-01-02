@@ -12,7 +12,7 @@
 </template>
 
 <script>
-    import {jraph, JraphOptions} from 'jraph';
+    import {jraph} from 'jraph';
 
     export default {
         data() {
@@ -22,15 +22,13 @@
             }
         },
         async created(){
-            let config = new JraphOptions();
-            config.url = "":
-            config.options.method = "POST";
-            config.query = `{
+            const jql = jraph(`https://csb-8kj415zvx9-yaccgwjitv.now.sh/`, {});
+            const request = jql`{
                 posts{
                     content
                 }
             }`;
-            this.items = await jraph(config);
+            this.items = await request;
         }
     }
 </script>

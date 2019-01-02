@@ -53,7 +53,7 @@ export default new Vuex.Store({
           }
         }`;
         if (createdPost) {
-          store.commit('addPost', { post: createdPost.data.post });
+          //store.commit('addPost', { post: createdPost.data.post });
           console.log('success');
           router.go(0);
         }
