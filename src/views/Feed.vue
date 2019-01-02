@@ -34,7 +34,7 @@
     <br/>
     <v-bottom-sheet v-model="sheet">
       <v-list>
-        <blue-editor menu="true" v-model="activePostContent"/>
+        <blue-editor menu v-model="activePostContent"/>
         <v-btn @click="submitPost">Submit your post</v-btn>
       </v-list>
     </v-bottom-sheet>
@@ -55,13 +55,12 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import BluePost from "@/components/Post.vue";
 import BlueEditor from "@/components/BlueEditor.vue";
 import BlueSettings from "@/components/Settings.vue";
 import { mapState } from "vuex";
 import jraph from "jraph";
-console.log(jraph);
 console.log("========================================================================");
 
 
@@ -83,20 +82,21 @@ export default {
     };
   },
   methods: {
-    submitPost(e) {
-      this.posts.push({
+    async submitPost(e) {
+      /* this.posts.push({
         id: 3,
         content: this.activePostContent,
         author: "ianfabs",
         postedOn: new Date()
-      });
+      }); */
+      
     },
     changeDrawerStatus(value) {
       this.settingsPanel = value;
     }
   },
   computed: {
-    ...mapState(['user'])
+    ...mapState(['user', 'api'])
   },
   components: {
     BluePost,
@@ -105,12 +105,12 @@ export default {
   },
   async created() {
     let posts = await jraph({
-      url: "https://csb-8kj415zvx9-ysgmolcfdk.now.sh/",
+      url: this.api,
       options: {},
       query: `{
-        posts(handle: "${this.user.email}"){
+        posts(email: "${this.user.email}"){
           content
-          authorHandle
+          authorEmail
           postedOn
         }
       }`

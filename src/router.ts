@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
-import About from './views/About.vue'
+import About from './views/Jraph.vue'
 import Login from './components/BlueLogin.vue';
 import Signup from './components/BlueSignup.vue';
 
